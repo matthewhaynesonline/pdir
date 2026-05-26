@@ -1,0 +1,22 @@
+[package]
+name = "pdir"
+version = "0.1.0"
+edition = "2024"
+authors = ["Matthew Haynes"]
+description = "Print directory file contents to stdout with relative path headers."
+repository = "https://github.com/matthewhaynesonline/pdir"
+homepage = "https://github.com/matthewhaynesonline/pdir"
+license = "Apache-2.0"
+keywords = ["cli", "files", "llm", "context"]
+categories = ["command-line-utilities"]
+readme = "README.md"
+rust-version = "1.85.1"
+
+[dependencies]
+anyhow = "1.0"
+clap = { version = "4", features = ["derive"] }
+globset = "0.4"
+ignore = "0.4"
+
+[dev-dependencies]
+tempfile = "3"
