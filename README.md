@@ -53,7 +53,7 @@ Each release includes prebuilt binaries and platform specific installers generat
 - Linux (`aarch64-unknown-linux-gnu`, `x86_64-unknown-linux-gnu`)
 - Windows (`x86_64-pc-windows-msvc`)
 
-See the [Releases page](/releases) for more information.
+See the [Releases page](releases) for more information.
 
 ### Build Locally
 
