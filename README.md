@@ -28,11 +28,17 @@ fn main() {
 ## Features
 
 - Recursive directory traversal
+- Multiple input paths
 - Relative path headers
 - Include glob patterns
 - Exclude glob patterns
+- Extension filter shorthand (`-e rs -e toml`)
 - `.gitignore` support on by default
-- UTF-8 lossy reading (won't explode on weird files)
+- Plain, Markdown, and Claude `<documents>` XML output formats
+- Optional line numbers
+- Stdin path piping (newline- or NUL-delimited)
+- File output (`-o`)
+- Binary file detection - skips with a stderr warning instead of outputting garbage
 - Single binary
 
 ## Installation
@@ -74,17 +80,65 @@ which pdir
 Run `pdir --help` for full usage. Quick examples:
 
 ```bash
-pdir .                                          # current directory
-pdir . --include '**/*.rs' --include '**/*.md'  # filtered
+pdir .                                           # current directory
+pdir src tests                                   # multiple paths
+pdir . --include '**/*.rs' --include '**/*.md'   # glob filter
+pdir . -e rs -e toml                             # extension shorthand
+pdir . --markdown                                # Markdown fenced code blocks
+pdir . --cxml                                    # Claude <documents> XML
+pdir . -n                                        # with line numbers
+pdir . -o context.txt                            # write to file
 ```
 
-### Suggested zsh alias: clipboard workflow (macOS)
+### Output formats
+
+**Plain** (default) - header line above each file:
+
+```
+--- src/main.rs ---
+fn main() { ... }
+```
+
+**Markdown** (`--markdown`) - fenced code block per file with language annotation:
+
+````
+## src/main.rs
+```rust
+fn main() { ... }
+```
+````
+
+**cxml** (`--cxml`) - Claude `<documents>` wrapper ready to paste directly into a prompt:
+
+```xml
+<documents>
+<document index="1">
+<source>src/main.rs</source>
+<document_content>
+fn main() { ... }
+</document_content>
+</document>
+</documents>
+```
+
+### Stdin piping
+
+When stdin is not a tty, `pdir` reads additional paths from it - one per line:
+
+```bash
+fd -e rs | pdir                    # pipe fd output
+find . -name '*.py' | pdir         # pipe find output
+find . -print0 | pdir --null       # NUL-delimited (safe with spaces)
+```
+
+### Suggested zsh aliases: clipboard workflows (macOS)
 
 ```bash
 alias pdir-copy='pdir . | pbcopy'
+alias pdir-cxml='pdir . --cxml | pbcopy'
 ```
 
-Copies your project tree to the clipboard, ready to paste into a chat interface — one of the most practical ways to give an LLM project context.
+`pdir-cxml` copies your project tree in Claude's native document format, ready to paste directly into a prompt.
 
 ## Notes
 
@@ -101,21 +155,16 @@ Patterns use standard glob syntax:
 
 ### Binary Files
 
-Files are read using UTF-8 lossy decoding - text files work normally, binary files won't crash the utility, but binary content may still appear in output. Exclude binary formats explicitly if needed:
+`pdir` detects non-UTF-8 files and skips them with a warning to stderr rather than emitting garbage:
 
-```bash
-pdir . \
-  --exclude '*.png' \
-  --exclude '*.jpg' \
-  --exclude '*.pdf'
+```
+pdir: skipping binary file: assets/logo.png
 ```
 
-Or rely on `.gitignore` if your repo already excludes generated and binary artifacts.
+You can also exclude binary formats explicitly via `--exclude` or `.gitignore`.
 
 ## Future Ideas
 
-- XML output mode (e.g. Claude `<documents>` format)
-- Markdown output mode
 - Token estimation
 - File count / size summary
 - Parallel file reading

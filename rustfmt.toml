@@ -1,0 +1,8 @@
+edition = "2024"
+max_width = 100
+reorder_imports = true
+reorder_modules = true
+use_small_heuristics = "Max"
+wrap_comments = true
+comment_width = 100
+normalize_comments = true
