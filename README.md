@@ -25,6 +25,10 @@ fn main() {
 }
 ```
 
+## Crate Docs
+
+https://matthewhaynesonline.github.io/pdir
+
 ## Features
 
 - Recursive directory traversal
